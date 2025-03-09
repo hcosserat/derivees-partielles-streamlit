@@ -139,7 +139,7 @@ def display_derivative_results(expr, all_vars, diff_vars):
 
     # Plot function based on number of variables
     if len(all_vars) == 1:
-        st.write("### Graphe de la fonction :")
+        st.write("### Graphe de la fonction sur [-5, 5]² :")
         fig, error = plot_single_variable_function(expr, all_vars[0])
         if fig:
             st.pyplot(fig)
