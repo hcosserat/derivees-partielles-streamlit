@@ -42,21 +42,16 @@ def calculate_hessian(expr, all_vars):
 def plot_single_variable_function(expr, var):
     """Create plots for a single-variable function and its derivative."""
     try:
-        # Convert to numerical functions for plotting
         f_lambda = sp.lambdify(var, expr, "numpy")
         df_lambda = sp.lambdify(var, sp.diff(expr, var), "numpy")
 
-        # Create x range
         x_range = np.linspace(-5, 5, 100)
 
-        # Calculate function and derivative values
         y_vals = np.array([f_lambda(xi) for xi in x_range])
         dy_vals = np.array([df_lambda(xi) for xi in x_range])
 
-        # Create figure with two subplots
         fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 10))
 
-        # Plot original function
         ax1.plot(x_range, y_vals, 'b-', label=f'f({var})')
         ax1.set_title(f'Fonction f({var})')
         ax1.set_xlabel(f'{var}')
@@ -64,7 +59,6 @@ def plot_single_variable_function(expr, var):
         ax1.grid(True)
         ax1.legend()
 
-        # Plot derivative
         ax2.plot(x_range, dy_vals, 'r-', label=f"f'({var})")
         ax2.set_title(f"Dérivée f'({var})")
         ax2.set_xlabel(f'{var}')
@@ -81,15 +75,12 @@ def plot_two_variable_function(expr, vars, function_str):
     """Create a 3D plot for a two-variable function."""
     try:
         x, y = vars
-        # Convert to numerical function for plotting
         f_lambda = sp.lambdify((x, y), expr, "numpy")
 
-        # Create mesh grid
         x_range = np.linspace(-5, 5, 100)
         y_range = np.linspace(-5, 5, 100)
         X, Y = np.meshgrid(x_range, y_range)
 
-        # Compute Z values (handling potential numerical issues)
         Z = np.zeros_like(X)
         for i in range(X.shape[0]):
             for j in range(X.shape[1]):
@@ -98,7 +89,6 @@ def plot_two_variable_function(expr, vars, function_str):
                 except:
                     Z[i, j] = np.nan
 
-        # Create plot
         fig = plt.figure(figsize=(10, 8))
         ax = fig.add_subplot(111, projection='3d')
         surf = ax.plot_surface(X, Y, Z, cmap='viridis', alpha=0.8)
@@ -115,29 +105,23 @@ def plot_two_variable_function(expr, vars, function_str):
 
 def display_derivative_results(expr, all_vars, diff_vars):
     """Calculate and display all derivative results."""
-    # Calculate the partial derivative in the specified order
     deriv = calculate_derivative(expr, diff_vars)
     st.write(f"### La dérivée de la fonction par rapport à {', '.join([var.name for var in diff_vars])} est :")
     st.latex(sp.latex(deriv))
 
-    # For multivariable functions, display gradient, Jacobian and Hessian
     if len(all_vars) > 1:
-        # Calculate and display gradient
         gradient = calculate_gradient(expr, all_vars)
         st.write("### Gradient :")
         st.latex(r"\nabla f = " + sp.latex(gradient))
 
-        # Calculate and display Jacobian
         jacobian = calculate_jacobian(gradient)
         st.write("### Matrice Jacobienne :")
         st.latex("J = " + sp.latex(jacobian))
 
-        # Calculate and display Hessian
         hessian = calculate_hessian(expr, all_vars)
         st.write("### Matrice Hessienne :")
         st.latex("H = " + sp.latex(hessian))
 
-    # Plot function based on number of variables
     if len(all_vars) == 1:
         st.write("### Graphe de la fonction sur [-5, 5]² :")
         fig, error = plot_single_variable_function(expr, all_vars[0])
