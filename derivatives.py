@@ -33,10 +33,20 @@ def plot_single_variable_function(expr, var):
         f_lambda = sp.lambdify(var, expr, "numpy")
         df_lambda = sp.lambdify(var, sp.diff(expr, var), "numpy")
 
-        x_range = np.linspace(-5, 5, 100)
+        x_range = np.linspace(-5, 5, 1000)
 
-        y_vals = np.array([f_lambda(xi) for xi in x_range])
-        dy_vals = np.array([df_lambda(xi) for xi in x_range])
+        y_vals = np.zeros(len(x_range))
+        dy_vals = np.zeros(len(x_range))
+
+        for i, xi in enumerate(x_range):
+            try:
+                y_vals[i] = f_lambda(xi)
+            except:
+                y_vals[i] = np.nan
+            try:
+                dy_vals[i] = df_lambda(xi)
+            except:
+                dy_vals[i] = np.nan
 
         fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 10))
 
@@ -55,6 +65,7 @@ def plot_single_variable_function(expr, var):
         ax2.legend()
 
         return fig, None
+
     except Exception as e:
         return None, f"La création du graphe a échoué : {str(e)}"
 
