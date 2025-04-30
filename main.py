@@ -6,7 +6,7 @@ from ui import standard_derivatives_tab, fractional_derivatives_tab, display_tip
 def main():
     st.title("Calculateur de Dérivées")
 
-    tabs = st.tabs(["Dérivées Standards", "Dérivées Fractionnaires"])
+    tabs = st.tabs(["Dérivées standards", "Dérivées fractionnaires"])
 
     with tabs[0]:
         standard_derivatives_tab()

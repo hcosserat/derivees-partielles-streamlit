@@ -90,7 +90,7 @@ def standard_derivatives_tab():
 def fractional_derivatives_tab():
     st.header("Dérivées fractionnaires")
 
-    function_str = st.text_input("Fonction à dériver", "x^2", key="frac_function")
+    function_str = st.text_input("Fonction à dériver", "exp(x)", key="frac_function")
     all_vars_str = st.text_input("Variables de la fonction (séparées par des virgules \",\")", "x", key="frac_vars")
     all_vars = [sp.Symbol(var.strip()) for var in all_vars_str.split(',') if var.strip()]
 
