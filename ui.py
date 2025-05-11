@@ -1,5 +1,6 @@
 import streamlit as st
 import sympy as sp
+from sympy import Equality
 
 from derivatives import (calculate_derivative, calculate_gradient, calculate_jacobian,
                          calculate_hessian, plot_single_variable_function, plot_two_variable_function)
@@ -16,6 +17,8 @@ def display_tips():
     - Toutes les fonctions ordinaires sont disponibles : sin, cos, tan, exp, log, sqrt, etc...
     - Les fonctions moins usuelles comme `gamma`, `beta`, `erf`, `erfc`, `Ei`, etc., sont également supportées.
     """)
+    st.markdown("""---""")
+    st.markdown("""Fait avec :streamlit: Streamlit, SymPy et Matplotlib""")
 
 
 def display_derivative_results(expr, all_vars, diff_vars):
@@ -70,6 +73,8 @@ def standard_derivatives_tab():
 
     expr, error = parse_function(function_str, all_vars)
 
+    if isinstance(expr, Equality):
+        expr = expr.rhs
     if expr:
         st.latex(sp.latex(expr))
     elif error:
