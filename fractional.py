@@ -6,24 +6,9 @@ from sympy.integrals.transforms import mellin_transform, inverse_mellin_transfor
 def rl_frac_deriv_poly(expr, var, order):
     """Calculates the Riemann-Liouville fractional derivative for a polynomial."""
     poly = expr.as_poly(var)
-    if poly is None:  # Pas un polynôme au sens strict de SymPy
-        return None
     result = sp.Integer(0)
     for monom, coeff in poly.terms():
-        k = monom[0]  # Exposant de var
-        if not isinstance(k, sp.Number):  # S'assurer que k est un nombre
-            return None  # Ne peut pas traiter si l'exposant n'est pas numérique ici
-
-        # Vérifier si gamma(k + 1 - order) est défini (dénominateur non nul ou infini)
-        if isinstance(k + 1 - order, sp.Integer) and (k + 1 - order) <= 0:
-            # Si k+1-order est un entier non positif, gamma explose ou n'est pas défini de manière standard.
-            # Pour la dérivée de R-L, si k-order < 0 et k est un entier, le résultat est généralement 0
-            # mais la formule directe avec gamma peut poser problème.
-            # Pour D^alpha x^k, si k est un entier et alpha > k, et alpha est entier, le résultat est 0.
-            # Si alpha n'est pas entier, le terme x^(k-alpha) est bien défini.
-            # On s'attend à ce que SymPy gère cela, mais une vérification peut être utile.
-            pass  # Laissons SymPy gérer, mais soyons conscients des pôles de Gamma.
-
+        k = monom[0]
         term_deriv = coeff * gamma(k + 1) / gamma(k + 1 - order) * var ** (k - order)
         result += term_deriv
     return result
@@ -43,7 +28,7 @@ def calculate_fractional_derivative(expr, var, order):
             poly_result = rl_frac_deriv_poly(expr, var, order)
             if poly_result is not None:
                 poly_result = sp.simplify(poly_result)
-                return poly_result, "Riemann-Liouville (polynômes)"
+                return poly_result, "Riemann-Liouville (polynôme)"
 
         # Si ce n'est pas un polynôme ou si rl_frac_deriv_poly a échoué pour une raison,
         # fallback vers la transformée de Mellin.
