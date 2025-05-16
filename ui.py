@@ -63,6 +63,36 @@ def display_derivative_results(expr, all_vars, diff_vars):
         if error:
             st.write(error)
 
+    # Calcul des zéros
+    st.write("### Zéros de la fonction :")
+
+    try:
+        func_roots = sp.solve(expr, all_vars)
+
+        if not func_roots:
+            st.info("Aucun zéro n'a été trouvé.")
+        else:
+            st.write("Ces valeurs annulent la fonction :")
+            for i, root in enumerate(func_roots):
+                st.write(f"$x_{i} = {sp.latex(root)}$")
+    except NotImplementedError:
+        st.info("Aucun zéro n'a été trouvé.")
+
+    st.write("### Zéros de la dérivée :")
+
+    try:
+        func_roots = sp.solve(deriv, all_vars)
+
+        if not func_roots:
+            st.info("Aucun zéro n'a été trouvé.")
+        else:
+            st.write("Ces valeurs annulent la fonction dérivée :")
+            for i, root in enumerate(func_roots):
+                x_tilde = r"\tilde{x_" + str(i) + "}"
+                st.write(f"${x_tilde} = {sp.latex(root)}$")
+    except NotImplementedError:
+        st.info("Aucun zéro n'a été trouvé.")
+
 
 def standard_derivatives_tab():
     st.header("Dérivées standards")
@@ -95,9 +125,8 @@ def standard_derivatives_tab():
 def fractional_derivatives_tab():
     st.header("Dérivées fractionnaires")
 
-    function_str = st.text_input("Fonction à dériver", "x^3", key="frac_function")
-    all_vars_str = st.text_input("Variables de la fonction (séparées par des virgules \",\")", "x", key="frac_vars")
-    all_vars = [sp.Symbol(var.strip()) for var in all_vars_str.split(',') if var.strip()]
+    function_str = st.text_input("Fonction en $x$ à dériver", "x^3", key="frac_function")
+    all_vars = [sp.Symbol("x")]
 
     expr, error = parse_function(function_str, all_vars)
 
@@ -106,20 +135,18 @@ def fractional_derivatives_tab():
     elif error:
         st.error(error)
 
-    diff_var_str = st.selectbox("Variable pour la dérivée fractionnaire",
-                                [var.name for var in all_vars] if all_vars else ["x"])
-    diff_var = sp.Symbol(diff_var_str)
     order = st.number_input("Ordre de la dérivée", min_value=0.01, max_value=10.0, value=0.5, step=0.1)
 
     st.write("### Dérivée fractionnaire :")
 
     try:
         if st.button("Calculer", key="frac_calc") and expr:
-            frac_result, frac_error = calculate_fractional_derivative(expr, diff_var, order)
+            frac_result, frac_msg = calculate_fractional_derivative(expr, all_vars[0], order)
             if frac_result:
-                st.write(f"### La dérivée fractionnaire d'ordre {order} par rapport à {diff_var} est :")
-                st.latex(f"D^{{{order}}}_{{{diff_var}}} f = " + sp.latex(frac_result))
-            elif frac_error:
-                st.error(frac_error)
+                st.write(f"### La dérivée fractionnaire d'ordre {order} par rapport à ${all_vars[0]}$ est :")
+                st.info(f"Méthode : {frac_msg}")
+                st.latex(f"D^{{{order}}}_{{{all_vars[0]}}} f = " + sp.latex(frac_result))
+            elif frac_msg:
+                st.error(frac_msg)
     except Exception as e:
         st.error(f"Une erreur s'est produite lors du calcul : {str(e)}")
