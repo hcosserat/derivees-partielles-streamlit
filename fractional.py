@@ -1,3 +1,6 @@
+import sys
+import traceback
+
 import sympy as sp
 from sympy.functions.special.gamma_functions import gamma
 from sympy.integrals.transforms import mellin_transform, inverse_mellin_transform, InverseMellinTransform
@@ -71,10 +74,10 @@ def calculate_fractional_derivative(expr, var, order):
         # Les pôles de 1/Gamma(s-order) sont où s-order = 0, -1, -2,... (donc s = order, order-1, ...)
         # La bande (a_strip, b_strip) doit être compatible avec ces pôles.
 
-        result_inv = inverse_mellin_transform(frac_deriv_mellin, s, x_out, (a_strip, b_strip), noconds=True)
-
-        if isinstance(result_inv, InverseMellinTransform):  # Si l'inversion a retourné un objet non évalué
-            # Tenter sans spécifier la bande explicitement, laissant SymPy décider
+        try:
+            result_inv = inverse_mellin_transform(frac_deriv_mellin, s, x_out, (a_strip, b_strip), noconds=True)
+            assert not isinstance(result_inv, InverseMellinTransform)
+        except (ValueError, TypeError, AssertionError):
             result_inv = inverse_mellin_transform(frac_deriv_mellin, s, x_out, (None, None), noconds=True)
 
         if isinstance(result_inv, InverseMellinTransform):
@@ -83,5 +86,5 @@ def calculate_fractional_derivative(expr, var, order):
         result_inv = sp.simplify(result_inv)
         return result_inv, "transformée de Mellin"
 
-    except Exception as e:
-        return None, f"Une erreur est survenue : {e}"
+    except:
+        return None, f"Cette fonction n'est pas supportée par l'application pour le moment."
