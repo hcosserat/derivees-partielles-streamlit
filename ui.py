@@ -135,17 +135,24 @@ def fractional_derivatives_tab():
     elif error:
         st.error(error)
 
-    order = st.number_input("Ordre de la dérivée", min_value=0.01, max_value=10.0, value=0.5, step=0.1)
+    order_str = st.text_input("Ordre de la dérivée (par exemple., 1/2, 2, 1+i)", "1/5", key="frac_order")
+
+    try:
+        order = sp.sympify(order_str)
+        valid_order = True
+    except Exception:
+        valid_order = False
+        st.error("L'ordre entré n'est pas valide. Utilisez des expressions comme 1/2, 2, 1+i")
 
     st.write("### Dérivée fractionnaire :")
 
     try:
-        if st.button("Calculer", key="frac_calc") and expr:
+        if st.button("Calculer", key="frac_calc") and expr and valid_order:
             frac_result, frac_msg = calculate_fractional_derivative(expr, all_vars[0], order)
             if frac_result:
-                st.write(f"### La dérivée fractionnaire d'ordre {order} par rapport à ${all_vars[0]}$ est :")
+                st.write(f"### La dérivée fractionnaire d'ordre ${sp.latex(order)}$ par rapport à ${all_vars[0]}$ est :")
                 st.info(f"Méthode : {frac_msg}")
-                st.latex(f"D^{{{order}}}_{{{all_vars[0]}}} f = " + sp.latex(frac_result))
+                st.latex(f"D^{{{sp.latex(order)}}}_{{{all_vars[0]}}} f = " + sp.latex(frac_result))
             elif frac_msg:
                 st.error(frac_msg)
     except Exception as e:
