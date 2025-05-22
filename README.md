@@ -31,6 +31,10 @@ Aucune installation n'est nécessaire pour utiliser la version en ligne.
    ```bash
    streamlit run main.py
    ```
+   ou
+   ```bash
+   pip install pywebview
+   python3 run_app.py```
 
 ### Fonctionnalités
 
